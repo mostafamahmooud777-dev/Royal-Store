@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>شحن شدات ببجي موبايل</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#18211c;--surface:#222e27;--line:#33443a;--text:#efe6d2;--muted:#a9b3a4;--gold:#f2b632;--gold-ink:#2a1d00;--err:#ff8a7a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f1ede2;--surface:#fffdf6;--line:#d8d1bd;--text:#232a22;--muted:#5d6757;--gold:#c98a00;--gold-ink:#fff;--err:#b3261e}}
+:root[data-theme="light"]{--bg:#f1ede2;--surface:#fffdf6;--line:#d8d1bd;--text:#232a22;--muted:#5d6757;--gold:#c98a00;--gold-ink:#fff;--err:#b3261e}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Tajawal",Tahoma,Arial,sans-serif;line-height:1.7}
+.wrap{max-width:880px;margin:0 auto;padding:0 18px}
+header{padding:40px 0 28px}
+h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.15;margin:0 0 10px;font-weight:800}
+header p{margin:0;color:var(--muted);max-width:52ch;font-size:1.05rem}
+h2{font-size:1.25rem;margin:34px 0 14px;font-weight:800}
+.packs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.pack input{position:absolute;opacity:0;pointer-events:none}
+.pack label{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 10px;background:var(--surface);border:2px solid var(--line);border-radius:14px;cursor:pointer;text-align:center;transition:border-color .15s,transform .15s}
+.pack input:checked+label{border-color:var(--gold);transform:translateY(-3px)}
+.pack input:focus-visible+label{outline:3px solid var(--gold);outline-offset:2px}
+.coin{width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe08a,var(--gold) 60%,#a56f00);display:grid;place-items:center;color:var(--gold-ink);font-weight:800;font-size:.8rem;box-shadow:inset 0 0 0 4px rgba(0,0,0,.12)}
+.uc{font-size:1.35rem;font-weight:800}
+.bonus{font-size:.8rem;color:var(--gold)}
+.price{color:var(--muted);font-size:.95rem}
+form{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;display:grid;gap:16px;margin-top:6px}
+.field{display:grid;gap:6px}
+.field span{font-weight:500}
+input[type=text],input[type=tel],select{width:100%;padding:13px 14px;font:inherit;color:var(--text);background:var(--bg);border:1.5px solid var(--line);border-radius:10px}
+input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+.hint{font-size:.85rem;color:var(--muted)}
+.err{color:var(--err);font-size:.9rem;min-height:1.2em;margin:0}
+.total{display:flex;justify-content:space-between;align-items:center;padding:14px 0 0;border-top:1px dashed var(--line);font-weight:800;font-size:1.15rem}
+button{font:inherit;font-weight:800;font-size:1.1rem;padding:15px;border:0;border-radius:12px;background:var(--gold);color:var(--gold-ink);cursor:pointer}
+button:focus-visible{outline:3px solid var(--text);outline-offset:2px}
+.safe{margin-top:26px;padding:16px 18px;border-inline-start:4px solid var(--gold);background:var(--surface);border-radius:8px;color:var(--muted)}
+.safe strong{color:var(--text)}
+ol{padding-inline-start:22px;color:var(--muted)}
+footer{padding:30px 0 40px;color:var(--muted);font-size:.85rem}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>اشحن شدات ببجي<br>بالـ ID بس.</h1>
+<p>اختار الباقة، اكتب رقم اللاعب، وابعت الطلب على واتساب. بنأكد معاك الدفع وننفذ الشحن.</p>
+</header>
+
+<main>
+<h2>اختار الباقة</h2>
+<div class="packs" id="packs" role="radiogroup" aria-label="باقات الشدات"></div>
+
+<h2>بيانات الطلب</h2>
+<form id="order" novalidate>
+<div class="field">
+<label for="pid"><span>رقم اللاعب (Player ID)</span></label>
+<input id="pid" type="tel" inputmode="numeric" placeholder="مثال: 5123456789" autocomplete="off">
+<span class="hint">تلاقيه في ببجي: الصورة الشخصية ← الـ ID تحت اسمك.</span>
+<p class="err" id="e-pid" role="alert"></p>
+</div>
+<div class="field">
+<label for="nick"><span>اسمك في اللعبة (اختياري)</span></label>
+<input id="nick" type="text" autocomplete="off">
+</div>
+<div class="field">
+<label for="pay"><span>طريقة الدفع</span></label>
+<select id="pay">
+<option>فودافون كاش</option>
+<option>إنستاباي</option>
+<option>اتصالات كاش</option>
+<option>تحويل بنكي</option>
+</select>
+</div>
+<p class="err" id="e-pack" role="alert"></p>
+<div class="total"><span>الإجمالي</span><span id="total">—</span></div>
+<button type="submit">ابعت الطلب على واتساب</button>
+</form>
+
+<div class="safe"><strong>مش هنطلب باسورد حسابك أبداً.</strong> الشحن بيتم برقم اللاعب بس. لو حد طلب منك كلمة السر أو كود تحقق، ده نصب.</div>
+
+<h2>إزاي الطلب بيتم؟</h2>
+<ol>
+<li>تختار الباقة وتكتب الـ ID وتدوس إرسال.</li>
+<li>تفتح معاك محادثة واتساب فيها تفاصيل الطلب جاهزة.</li>
+<li>بنبعتلك رقم الدفع، وبعد التحويل بنشحن وبنرد عليك بالتأكيد.</li>
+</ol>
+</main>
+
+<footer>الموقع غير تابع رسمياً لشركة ببجي موبايل أو Tencent. كل العلامات التجارية لأصحابها.</footer>
+</div>
+
+<script>
+// عدّل الأسعار ورقم الواتساب من هنا
+const WHATSAPP = "201000000000"; // بصيغة دولية بدون +
+const PACKS = [
+  {uc:60,   bonus:0,    price:50},
+  {uc:325,  bonus:25,   price:250},
+  {uc:660,  bonus:60,   price:500},
+  {uc:1800, bonus:300,  price:1250},
+  {uc:3850, bonus:850,  price:2500},
+  {uc:8100, bonus:2100, price:5000}
+];
+const fmt = n => n.toLocaleString("ar-EG");
+const box = document.getElementById("packs");
+PACKS.forEach((p,i)=>{
+  const d = document.createElement("div");
+  d.className = "pack";
+  d.innerHTML = `<input type="radio" name="pack" id="p${i}" value="${i}">
+  <label for="p${i}"><div class="coin">UC</div><div class="uc">${fmt(p.uc)}</div>
+  ${p.bonus?`<div class="bonus">+${fmt(p.bonus)} هدية</div>`:`<div class="bonus">&nbsp;</div>`}
+  <div class="price">${fmt(p.price)} جنيه</div></label>`;
+  box.appendChild(d);
+});
+const sel = () => { const c = document.querySelector('input[name=pack]:checked'); return c ? PACKS[+c.value] : null; };
+box.addEventListener("change", ()=>{
+  const p = sel();
+  document.getElementById("total").textContent = p ? fmt(p.price)+" جنيه" : "—";
+  document.getElementById("e-pack").textContent = "";
+});
+document.getElementById("order").addEventListener("submit", e=>{
+  e.preventDefault();
+  const pid = document.getElementById("pid").value.replace(/\s/g,"");
+  const ePid = document.getElementById("e-pid"), ePack = document.getElementById("e-pack");
+  const p = sel();
+  ePid.textContent = ""; ePack.textContent = "";
+  if(!p){ ePack.textContent = "اختار باقة الأول."; return; }
+  if(!/^\d{6,12}$/.test(pid)){ ePid.textContent = "اكتب رقم اللاعب بالأرقام فقط (من 6 لـ 12 رقم)."; return; }
+  const nick = document.getElementById("nick").value.trim();
+  const pay = document.getElementById("pay").value;
+  const msg = `طلب شحن ببجي\nالباقة: ${p.uc} UC${p.bonus?` (+${p.bonus} هدية)`:""}\nالسعر: ${p.price} جنيه\nID: ${pid}${nick?`\nالاسم: ${nick}`:""}\nالدفع: ${pay}`;
+  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+});
+</script>
+</body>
+</html>
